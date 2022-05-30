@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+option go_package = ".;api";
+
+service Contacts {
+    // Get a list of contacts.
+    rpc ListContacts(ListContactsRequest) returns (ListContactsResponse);
+}
+
+message Contact {
+    string id = 1;
+    string forename = 2;
+    string surname = 3;
+    string phone_number = 4;
+}
+
+message ListContactsRequest {
+    // Filters message, we use a separate message to define
+    // the filters, this means we can use this message
+    // to encode the query for use on subsequent results.
+    message Filters {
+        // Filter on a partial forname.
+        string forename = 1;
+
+        // Filter on a partial phone number.
+        string phone_number = 2;
+    }
+
+    // The query, this MUST NOT be set when using a page
+    // token.
+    Filters query = 1;
+
+    // How many results to return in one request, this
+    // must be a minimum of 0 and a sane maximum, in this
+    // case the server will return invalid arguement if
+    // the page size is over 30 just to simulate it easier.
+    int32 page_size = 2;
+
+    // How many results to skip, this can be sent on the
+    // first page request or when obtaining "next page".
+    int32 skip = 3;
+
+    // The page token, if not set the first page of results
+    // is returned.
+    string page_token = 4;
+}
+
+message ListContactsResponse {
+    // A list of contacts, ranging between 0 and
+    // `page_size` in length.
+    repeated Contact contacts = 1;
+
+    // The total results found in the query.
+    int32 total = 2;
+
+    // If set, means there is more results. Use this page token
+    // in the next call to `ListContacts` to load more results.
+    string next_page_token = 3;
+}
