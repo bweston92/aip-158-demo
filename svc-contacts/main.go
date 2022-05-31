@@ -1,9 +1,19 @@
 package main
 
-import "log"
+import (
+	"flag"
+	"log"
+)
 
 func main() {
-	a := newApp(nil)
+	flag.Parse()
+
+	s, err := getStoreFromEnvironment()
+	if err != nil {
+		log.Fatalf("unable to construct store: %s", err)
+	}
+
+	a := newApp(s)
 	startAdminConsole(a)
 
 	log.Printf("--\n")

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"sync"
 )
 
@@ -31,6 +32,20 @@ func (s *memoryStore) Count(context.Context, Filters) (int32, error) {
 	return 0, nil
 }
 
-func (s *memoryStore) Persist(context.Context, *Contact) error {
+func (s *memoryStore) Persist(_ context.Context, c *Contact) error {
+	s.m.Lock()
+	defer s.m.Unlock()
+
+	if c.ID == "" {
+		return errors.New("invalid identifier")
+	}
+
+	if _, ok := s.id[c.ID]; ok {
+		return errors.New("conflict")
+	}
+
+	s.id[c.ID] = len(s.entries)
+	s.entries = append(s.entries, *c)
+
 	return nil
 }

@@ -1,6 +1,15 @@
 package main
 
-import "context"
+import (
+	"context"
+	"flag"
+	"fmt"
+	"strings"
+)
+
+var (
+	cnfStore = flag.String("contact-store", "inmemory", "Which storage to use for contacts.")
+)
 
 type (
 	Contact struct {
@@ -19,3 +28,15 @@ type (
 		Persist(context.Context, *Contact) error
 	}
 )
+
+func getStoreFromEnvironment() (Store, error) {
+	parts := strings.Split(*cnfStore, ":")
+	driver := parts[0]
+
+	switch driver {
+	case "inmemory":
+		return newMemoryStore(), nil
+	default:
+		return nil, fmt.Errorf("unknown contact store config: %s", driver)
+	}
+}
