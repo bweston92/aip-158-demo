@@ -22,7 +22,7 @@ var (
 	web embed.FS
 )
 
-func startAdminConsole(a *App) error {
+func startAdminConsole(s Store) error {
 	nl, err := net.Listen("tcp", ":3100")
 	if err != nil {
 		return fmt.Errorf("unable to open port 3100: %w", err)
@@ -34,7 +34,7 @@ func startAdminConsole(a *App) error {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/api/seed", seedMoreContactsHandler(a))
+	mux.Handle("/api/seed", seedMoreContactsHandler(s))
 	mux.Handle("/", http.FileServer(http.FS(webFS)))
 
 	srv := http.Server{
@@ -46,7 +46,7 @@ func startAdminConsole(a *App) error {
 	return nil
 }
 
-func seedMoreContactsHandler(a *App) http.HandlerFunc {
+func seedMoreContactsHandler(s Store) http.HandlerFunc {
 	f := faker.New().Person()
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -67,7 +67,7 @@ func seedMoreContactsHandler(a *App) http.HandlerFunc {
 		}
 		if err := json.Unmarshal(rb, &data); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(`{"error": "json malformed"}`))
+			_, _ = w.Write([]byte(`{"error": "json malformed"}`))
 			return
 		}
 
@@ -79,14 +79,14 @@ func seedMoreContactsHandler(a *App) http.HandlerFunc {
 				PhoneNumber: f.Contact().Phone,
 			}
 
-			if err := a.Add(ctx, &c); err != nil {
+			if err := s.Persist(ctx, &c); err != nil {
 				log.Printf("unable to add contact: %s\n", err)
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte(`{"error": "unable to add contact: ` + err.Error() + `"}`))
+				_, _ = w.Write([]byte(`{"error": "unable to add contact: ` + err.Error() + `"}`))
 				return
 			}
 		}
 
-		w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{}`))
 	}
 }
