@@ -34,6 +34,7 @@ message ListContactsRequest {
     // must be a minimum of 0 and a sane maximum, in this
     // case the server will return invalid arguement if
     // the page size is over 30 just to simulate it easier.
+    // The default value is 10.
     int32 page_size = 2;
 
     // How many results to skip, this can be sent on the

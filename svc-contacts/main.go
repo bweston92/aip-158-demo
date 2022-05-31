@@ -17,6 +17,10 @@ func main() {
 		log.Fatalf("unable to start admin console: %s", err)
 	}
 
+	if err := startPublicAPI(s); err != nil {
+		log.Fatalf("unable to start admin console: %s", err)
+	}
+
 	log.Printf("--\n")
 	log.Printf("Add data to this application using: http://localhost:3100/")
 	log.Printf("--\n")

@@ -57,7 +57,7 @@ func seedMoreContactsHandler(s Store) http.HandlerFunc {
 
 		if r.Header.Get("content-type") != "application/json" || r.Method != "POST" {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(`{"error": "invalid request"}`))
+			_, _ = w.Write([]byte(`{"error": "invalid request"}`))
 			return
 		}
 

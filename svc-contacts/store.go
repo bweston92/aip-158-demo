@@ -20,6 +20,9 @@ type (
 	}
 
 	Filters struct {
+		AfterID     string
+		Forename    string
+		PhoneNumber string
 	}
 
 	Store interface {
