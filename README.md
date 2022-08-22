@@ -2,6 +2,8 @@
 
 **WARNING! This is self documenting my first attempt at implementing the AIP-158 and could be seriously wrong.**
 
+Blog post: https://bweston.me/a-grpc-pagination-api-implementation-aip-158-c74014d7be24
+
 ## Components
 
 ### svc-contacts
